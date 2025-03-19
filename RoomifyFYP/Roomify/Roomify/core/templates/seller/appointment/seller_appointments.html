@@ -1,0 +1,41 @@
+{% extends "extend/sidebar_base.html" %}
+{% load static %}
+{% block content %}
+<div class="mb-8">
+    <h3 class="text-xl font-semibold text-gray-700 mb-4">Appointment Management</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+      <!-- Appointment Requests Box -->
+      <div class="bg-[rgb(51_51_51_/var(--tw-bg-opacity,_1))] p-8 rounded-lg shadow-lg text-center">
+        <p class="text-xl font-semibold text-white mb-2">Appointment Requests</p>
+        <p class="text-4xl font-extrabold text-white mb-10">{{total_appointment_requests}}</p>
+        <a href="{% url 'appointment_request' %}" class="bg-white text-dark-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 hover:text-dark-900 transition duration-300 transform hover:scale-105 mt-5">View All</a>
+      </div>
+    
+      <!-- Pending Appointments Box -->
+      <div class="bg-[rgb(51_51_51_/var(--tw-bg-opacity,_1))] p-8 rounded-lg shadow-lg text-center">
+        <p class="text-xl font-semibold text-white mb-2">Pending Appointments</p>
+        <p class="text-4xl font-extrabold text-white mb-10">{{total_pending_request}}</p>
+        <a href="{% url 'appointment_pending' %}" class="bg-white text-dark-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 hover:text-dark-900 transition duration-300 transform hover:scale-105">Manage</a>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6">
+      <!-- Accepted Appointments Box -->
+      <div class="bg-[rgb(51_51_51_/var(--tw-bg-opacity,_1))] p-8 rounded-lg shadow-lg text-center">
+        <p class="text-xl font-semibold text-white mb-2">Completed Appointments</p>
+        <p class="text-4xl font-extrabold text-white mb-10">{{total_appointment_completed}}</p>
+        <a href="{% url 'appointment_completed' %}" class="bg-white text-dark-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 hover:text-dark-900 transition duration-300 transform hover:scale-105">Manage</a>
+      </div>
+    
+      <!-- Canceled Requests Box -->
+      <div class="bg-[rgb(51_51_51_/var(--tw-bg-opacity,_1))] p-8 rounded-lg shadow-lg text-center">
+        <p class="text-xl font-semibold text-white mb-2">Canceled Appointments</p>
+        <p class="text-4xl font-extrabold text-white mb-10">{{total_appointment_canceled}}</p>
+        <a href="{% url 'appointment_cancel' %}" class="bg-white text-dark-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 hover:text-dark-900 transition duration-300 transform hover:scale-105">Manage</a>
+      </div>
+    </div>
+    
+      
+  </div>
+{% endblock content %}

@@ -1,0 +1,159 @@
+{% extends "extend/sidebar_base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    .table-container {
+        margin-top: 30px;
+      }
+  
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+  
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+  
+      th {
+        background-color: #2c3e50;
+        color: white;
+      }
+  
+      .actions button {
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        margin: 3px;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
+/* Common button styles */
+a.edit-btn, a.delete-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    color: white;
+    font-size: 14px;
+    border: 1px solid transparent;
+}
+
+/* Edit button specific style */
+.edit-btn {
+    background-color: #3498db;
+    border-color: #3498db; /* Border color to match button */
+}
+
+.edit-btn:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+/* Delete button specific style */
+.delete-btn {
+    background-color: #e74c3c;
+    border-color: #e74c3c; /* Border color to match button */
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+  
+      .accept-btn {
+        background: #27ae60;
+        color: white;
+      }
+  
+      .actions button:hover {
+        opacity: 0.8;
+      }
+  
+      .add-room-btn {
+        display: block;
+        width: 200px;
+        margin: 20px auto;
+        padding: 10px;
+        background-color: #FF6B61;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        font-weight: 600;
+        text-decoration: none; /* Removes underline */
+        transition: 0.3s;
+    }
+    
+    .add-room-btn:hover {
+        background-color:rgb(228, 108, 99);
+    }
+    
+  
+      /* Person Icon Styles */
+      .profile-container img {
+        background-color: #7f8c8d;
+        /* A neutral gray color for person logo */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 18px;
+        text-align: center;
+        line-height: 40px;
+        /* To center text in the circle */
+      }
+</style>
+<p>Check all your listed rooms here</p>
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="messages">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+<div class="table-container">
+    <h2>Listed Rooms</h2>
+    <table>
+      <tr>
+        <th>Image</th>
+        <th>Title</th>
+        <th>City</th>
+        <th>Price</th>
+        <th>Actions</th>
+      </tr>
+      {% for sellerRooms in seller_rooms_table %}
+      <tr>
+        <td><img src="{{sellerRooms.room_img.url}}" style="height: 70px; width: 100px" /></td>
+        <td>{{sellerRooms.title}}</td>
+        <td>{{sellerRooms.city}}</td>
+        <td>रू{{sellerRooms.rent}}</td>
+        <td class="actions">
+            <a href="{% url 'update_room' sellerRooms.id %}" class="edit-btn">Edit</a>
+            <a href="{% url 'update_room' sellerRooms.id %}" class="delete-btn">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <a href="{% url 'room_add' %}" class="add-room-btn ">Add Room</a>
+</div>
+</div>
+{% endblock content %}

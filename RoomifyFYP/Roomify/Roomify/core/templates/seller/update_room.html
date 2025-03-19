@@ -1,0 +1,179 @@
+{% extends "extend/sidebar_base.html" %}
+{% load static %}
+{% block content %}
+<div class="bg-white shadow-lg rounded-2xl p-8 w-full border border-gray-300">
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">Add Room</h1>
+
+  {% for room in seller_rooms %}
+    <form action="{% url 'update_room' room.id %}" method="POST" class="space-y-6" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Room Title -->
+        <div>
+          <label class="block text-gray-700 font-medium">Room Title:</label>
+          <input type="text" name="name" value="{{ room.title }}"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+            placeholder="Enter room title" />
+        </div>
+
+        <!-- City -->
+        <div>
+          <label class="block text-gray-700 font-medium">City:</label>
+          <select name="city"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]">
+            <option >Select your city</option>
+            {% for city in cities %}
+            <option value="{{ city.id }}">{{ city.city }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Rent -->
+        <div>
+          <label class="block text-gray-700 font-medium">Rent:</label>
+          <input type="number" name="rent" value="{{ room.rent }}"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+            placeholder="Enter rent amount" />
+        </div>
+
+        <!-- Description -->
+        <div class="col-span-2">
+          <label class="block text-gray-700 font-medium">Description:</label>
+          <textarea name="description"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+            placeholder="Enter description">{{ room.description }}</textarea>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Main Image -->
+        <div>
+          <label class="block text-gray-700 font-medium">Main Image:</label>
+          {% if room.room_img %}
+          <img src="{{ room.room_img.url }}" alt="Main Room Image" class="mt-2" style="width: 100px; height: 100px; object-fit: cover;">
+        {% endif %}
+          <input type="file" class="w-full mt-1 border border-gray-300 rounded-lg px-4 py-2" name="room_image" />
+        </div>
+
+        <!-- Image Upload Container -->
+        <div id="image-upload-container">
+            <label class="block text-gray-700 font-medium">Additional Images:</label>
+        
+            {% for thumbnail in room.thumbnails.all %}
+            <div class="mt-2">
+                <img src="{{ thumbnail.thumbnail_img.url }}" alt="Room Image"
+                    style="width: 100px; height: 100px; margin-top: 5px;">
+                    <input type="file" name="room_image_{{ forloop.counter }}" class="w-full mt-1 border border-gray-300 rounded-lg px-4 py-2" />
+                </div>
+            {% empty %}
+            <p>No additional images.</p>
+            {% endfor %}
+        </div>
+        
+        <!-- Add Image Button (Inside a Wrapper for Proper Placement) -->
+        <div id="button-container">
+            <button type="button" id="add-image-btn"
+                    class="mt-2 px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition text-sm">
+            + Add Image
+            </button>
+        </div>
+        
+
+        <!-- Specifications -->
+        <div id="specifications-container">
+          <div class="grid grid-cols-2 gap-6 spec-row">
+            {% for spec in room.specifications.all %}
+            <div>
+              <label class="block text-gray-700 font-medium">Specification Title:</label>
+              <input type="text" name="old_spec_name[]" value="{{spec.spec_name}}" class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]" placeholder="Enter specification name" />
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium">Specification Detail:</label>
+              <input type="text"  value="{{spec.spec_detail}}" name="old_spec_detail[]" class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]" placeholder="Enter specification detail" />
+            </div>
+            {% empty %}
+            <p>No Specifications of Room.</p>
+            {% endfor %}
+          </div>
+          <div class="grid grid-cols-2 gap-6 spec-row" hidden>
+            <div hidden>
+              <label class="block text-gray-700 font-medium">Specification Title:</label>
+              <input type="text"  name="new_spec_name[]" class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]" placeholder="Enter specification name" />
+            </div>
+            <div hidden>
+              <label class="block text-gray-700 font-medium">Specification Detail:</label>
+              <input type="text"   name="new_spec_detail[]" class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]" placeholder="Enter specification detail" />
+            </div>
+        </div>
+        <button type="button" id="add-spec-btn" class="mt-2 px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition text-sm">
+          + Add Details
+        </button>
+
+        <!-- Submit Button -->
+        <div class="add-room-div mt-6">
+          <button type="submit" class="w-full px-4 py-3 bg-[#FF6B61] text-white font-semibold rounded-lg hover:bg-red-500 transition">
+            Update Room
+          </button>
+        </div>
+      </div>
+    </form>
+  {% endfor %}
+</div>
+
+<script>
+    document.getElementById('add-image-btn').addEventListener('click', function () {
+        const container = document.getElementById('image-upload-container');
+        const buttonContainer = document.getElementById('button-container');
+        
+        // Count the number of existing file input fields
+        const imageCount = container.querySelectorAll('input[type="file"]').length + 1;
+    
+        // Create a wrapper div for the new input field
+        const newDiv = document.createElement('div');
+        newDiv.className = "mt-2";
+    
+        // Create the new file input field
+        const newImageInput = document.createElement('input');
+        newImageInput.type = 'file';
+        newImageInput.name = `room_image_${imageCount}`;
+        newImageInput.className = "w-full border border-gray-300 rounded-lg px-4 py-2";
+    
+        newDiv.appendChild(newImageInput);
+    
+        // Insert new input before the button container (so it appears above the button)
+        container.appendChild(newDiv);
+        container.insertBefore(newDiv, buttonContainer);
+    });
+    
+    
+
+    document.getElementById('add-spec-btn').addEventListener('click', function () {
+        const container = document.getElementById('specifications-container');
+        const addButton = document.getElementById('add-spec-btn');
+    
+        // Create a new specification row
+        const newSpecRow = document.createElement('div');
+        newSpecRow.className = 'grid grid-cols-2 gap-6 spec-row mt-2';
+    
+        newSpecRow.innerHTML = `
+          <div>
+            <label class="block text-gray-700 font-medium">Specification Title:</label>
+            <input type="text" name="new_spec_name[]"
+              class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+              placeholder="Enter specification name" />
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium">Specification Detail:</label>
+            <input type="text" name="new_spec_detail[]"
+              class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+              placeholder="Enter specification detail" />
+          </div>
+        `;
+    
+        // Insert the new specification row above the "Add Details" button
+        container.insertBefore(newSpecRow, addButton);
+    });
+</script>
+
+{% endblock content %}

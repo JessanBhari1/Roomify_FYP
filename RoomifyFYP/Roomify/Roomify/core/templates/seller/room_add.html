@@ -1,0 +1,135 @@
+{% extends "extend/sidebar_base.html" %}
+{% load static %}
+{% block content %}
+<div class="bg-white shadow-lg rounded-2xl p-8 w-full border border-gray-300">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Add Room</h1>
+
+    <form action="{% url 'room_add' %}" method="POST" class="space-y-6" enctype="multipart/form-data">
+        {% csrf_token %}        
+        <div class="grid grid-cols-2 gap-6">
+        <!-- Room Title -->
+        <div>
+          <label class="block text-gray-700 font-medium">Room Title:</label>
+          <input type="text" name="name"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+            placeholder="Enter room title" />
+        </div>
+
+        <!-- City -->
+        <div>
+          <label class="block text-gray-700 font-medium">City:</label>
+          <select name="city"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]">
+            <option>Select your city</option>
+            {% for city in cities %}
+            <option value="{{ city.id }}">{{ city.city }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Rent -->
+        <div>
+          <label class="block text-gray-700 font-medium">Rent:</label>
+          <input type="number" name="rent"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+            placeholder="Enter rent amount" />
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-gray-700 font-medium">Description:</label>
+          <textarea name="description"
+            class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+            placeholder="Enter description"></textarea>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Main Image -->
+        <div>
+          <label class="block text-gray-700 font-medium">Main Image:</label>
+          <input type="file" class="w-full mt-1 border border-gray-300 rounded-lg px-4 py-2" id="room_image"name="room_image" />
+        </div>
+      
+        <!-- Additional Image -->
+        <div id="image-upload-container">
+          <label class="block text-gray-700 font-medium">Additional Image:</label>
+          <input type="file" class="w-full mt-1 border border-gray-300 rounded-lg px-4 py-2" id="room_image_1" name="room_image_1" />
+
+        </div>
+        <button type="button" id="add-image-btn"class="mt-2 px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition text-sm">
+            + Add Image
+          </button>
+      
+        <!-- Specifications -->
+        <div id="specifications-container">
+          <div class="grid grid-cols-1 gap-6 spec-row">
+            <div>
+              <label class="block text-gray-700 font-medium">Detail Title:</label>
+              <input type="text" name="spec_name[]" class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]" placeholder="Enter specification name" />
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium">Detail Availibiltity:</label>
+              <input type="text" name="spec_detail[]" class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]" placeholder="Enter specification detail" />
+            </div>
+
+          </div>
+        </div>
+        <button type="button" id="add-spec-btn" class="mt-2 px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition text-sm">
+            + Add Details
+          </button>
+      
+        <!-- Submit Button -->
+        <div class="add-room-div">
+          <button type="submit" class="w-full mt-6 px-4 py-3 bg-[#FF6B61] text-white font-semibold rounded-lg hover:bg-red-500 transition">
+            Add Room
+          </button>
+        </div>
+      </div>
+      
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('add-image-btn').addEventListener('click', function () {
+        const container = document.getElementById('image-upload-container');
+        const imageCount = container.querySelectorAll('input[type="file"]').length + 1;
+    
+        const newDiv = document.createElement('div');
+        newDiv.className = "mt-2";
+        
+        const newImageInput = document.createElement('input');
+        newImageInput.type = 'file';
+        newImageInput.name = `room_image_${imageCount}`;
+        newImageInput.className = "w-full border border-gray-300 rounded-lg px-4 py-2";
+        
+        newDiv.appendChild(newImageInput);
+        container.appendChild(newDiv);
+      });
+    
+      document.getElementById('add-spec-btn').addEventListener('click', function () {
+        const container = document.getElementById('specifications-container');
+    
+        const newSpecRow = document.createElement('div');
+        newSpecRow.className = 'grid grid-cols-2 gap-6 spec-row mt-2'; // Added margin-top to prevent resizing
+        
+        newSpecRow.innerHTML = `
+          <div>
+            <label class="block text-gray-700 font-medium">Specification Name:</label>
+            <input type="text" name="spec_name[]"
+              class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+              placeholder="Enter specification name" />
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium">Specification Detail:</label>
+            <input type="text" name="spec_detail[]"
+              class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B61]"
+              placeholder="Enter specification detail" />
+          </div>
+        `;
+    
+        container.appendChild(newSpecRow);
+      });
+  </script>
+
+  {% endblock content %}

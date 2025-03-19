@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Choose Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<style>
+
+    :root {
+        --primary-color: #ff6f61;
+        --secondary-color: #4A90E2;
+        --accent-color: #F59E0B;
+        --light-color: #F3F4F6;
+        --dark-color: #1F2937;
+    }
+
+    .choose-btn{
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+
+    }
+
+</style>
+
+<body class="flex items-center justify-center min-h-screen bg-gray-100 text-gray-800">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg border border-gray-300">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Choose Registration</h1>
+            <p class="text-gray-600 mt-1">Select an Option for Register</p>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Customer Registration Box -->
+            <div class="border border-gray-300 rounded-xl p-6 flex items-center justify-between shadow-sm bg-gray-50">
+                <div class="flex items-center">
+                    <img src="https://cdn-icons-png.flaticon.com/128/847/847969.png" alt="Customer Icon"
+                        class="w-14 h-14 mr-4" />
+                    <div>
+                        <p class="text-gray-600">Register as Customer</p>
+                        <h2 class="text-2xl font-bold text-gray-900">Customer</h2>
+                        <p class="text-gray-600">Find your Perfect Room, Your Way</p>
+                    </div>
+                </div>
+                <a href="{% url 'customer_register' %}"
+                    class="ml-4 px-4 py-2 text-white font-semibold rounded-lg hover:bg-red-500 transition choose-btn ">
+                    Register
+                </a>
+            </div>
+
+            <!-- Seller Registration Box -->
+            <div class="border border-gray-300 rounded-xl p-6 flex items-center justify-between shadow-sm bg-gray-50">
+                <div class="flex items-center">
+                    <img src="https://cdn-icons-png.flaticon.com/128/847/847969.png" alt="Seller Icon"
+                        class="w-14 h-14 mr-4" />
+                    <div>
+                        <p class="text-gray-600">Register as Seller</p>
+                        <h2 class="text-2xl font-bold text-gray-900">Seller</h2>
+                        <p class="text-gray-600">
+                            Join as a seller and start your business today at best price
+                        </p>
+                    </div>
+                </div>
+                <a href="{% url 'seller_register' %}"
+                    class="ml-4 px-4 py-2  text-white font-semibold rounded-lg hover:bg-red-500 transition choose-btn ">
+                    Register
+                </a>
+            </div>
+        </div>
+
+        <p class="mt-6 text-center text-gray-600">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-[#FF6B61] font-semibold hover:underline">Log in</a>
+        </p>
+    </div>
+</body>
+
+</html>
