@@ -50,14 +50,23 @@
             <a href="{% url 'seller_dashboard' %}" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Dashboard</a>
         </li>
         <li class="py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">          
-            <a href="#" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Subscription</a>
+            <a href="{% url 'seller_subscription' %}" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Subscription</a>
         </li>
+        {% if not user.is_subscribed %}
+        <li class="py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">          
+            <a href="{% url 'seller_rooms' %}" data-bs-toggle="modal" data-bs-target="#renewSubscriptionModal" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Rooms</a>
+        </li>
+        <li class="py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">          
+            <a href="{% url 'seller_appointments' %}" data-bs-toggle="modal" data-bs-target="#renewSubscriptionModal" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Appointment</a>
+        </li>
+        {% else %}
         <li class="py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">          
             <a href="{% url 'seller_rooms' %}" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Rooms</a>
         </li>
         <li class="py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">          
             <a href="{% url 'seller_appointments' %}" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Appointment</a>
         </li>
+        {% endif %}
         <li class="py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">          
             <a href="{% url 'login' %}" class="block py-2 px-4 hover:bg-gray-700 rounded cursor-pointer">Logout</a>
         </li>
@@ -111,5 +120,36 @@
             </div>
         </div>
     </div>
+
+
+  <!-- Renew Subscription Modal -->
+<div class="modal fade" id="renewSubscriptionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Renew Your Subscription</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+              <p class="text-muted">Your subscription is about to expire. Renew now to continue enjoying our services without interruption.</p>
+              <div class="subscription-info text-center my-3">
+                  <h2><b>Rs 1200</b> per Month</h2>
+                  <p class="text-muted">Stay connected with premium content and features.</p>
+              </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <form action="{% url 'Subscription_renew' %}" method="POST">
+                
+                {% csrf_token %}
+                <button type="submit"  value="Pay With Khalti" class="btn btn-primary">Renew Now</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+  
+
   
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

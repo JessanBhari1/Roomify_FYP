@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from accounts.manager import CustomManager
+from django.utils import timezone
 
 
 # Create your models here.
@@ -36,3 +37,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+    
+    
+    # Method to check subscription status
+    def check_subscription_status(self):
+        """Check if subscription has expired and update status."""
+        if self.subscription_end_date and timezone.now() > self.subscription_end_date:
+            self.is_subscribed = False
+            subscriptions = self.subscriptions.filter(is_active=True)
+            for subscription in subscriptions:
+                subscription.is_active = False
+                subscription.save()
+            self.save()

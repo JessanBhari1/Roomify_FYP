@@ -135,6 +135,8 @@ def seller_dashboard(request):
         user = request.user
         if request.user.user_type != 'seller':
             return redirect('login')
+        else:
+            user.check_subscription_status()
         
         # calculate seller subscription remaning days
         if user.is_subscribed and user.subscription_end_date:
@@ -583,3 +585,14 @@ def appointment_cancel(request):
             'unread_notifications_count': unread_notifications_count,
         }
     return render(request, "seller/appointment/appointment_cancel.html", data)
+
+# seller subscription management 
+def subscription_management(request):
+    subscriptions = Subscription.objects.filter(seller=request.user).order_by("-id")[:1]
+    payments = Payment.objects.filter(seller=request.user).order_by("-id")
+
+    data={
+        'subscriptions': subscriptions,
+        'payments': payments,
+    }
+    return render(request, "seller/subscription/subscription_manage.html", data)

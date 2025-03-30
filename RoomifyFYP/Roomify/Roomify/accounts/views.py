@@ -232,3 +232,101 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('homepage')
+
+def Subscription_renew(request):
+    if request.method == "POST":
+        # generate unique purchase id
+        purchase_order_id = str(uuid.uuid4())
+
+        url = "https://dev.khalti.com/api/v2/epayment/initiate/"
+
+        payload = json.dumps({
+            "return_url": "http://127.0.0.1:8000/verify_renewal",
+            "website_url": "http://127.0.0.1:8000/",
+            "amount": 1200 * 100,   
+            "purchase_order_id": purchase_order_id,
+            "purchase_order_name": "Subscription Renewal",
+        })
+
+        headers = {
+            'Authorization': 'key 0b7fa0b9a2bc40299d1b91329ff8fe63',
+            'Content-Type': 'application/json',
+        }
+        response = requests.post(url, headers=headers, data=payload)
+        print(response.text)
+
+        # Store renewal intent in session
+        request.session['renewal_detail'] = {
+            'seller_id': request.user.id,
+            'purchase_order_id': purchase_order_id
+        }
+
+        if response.status_code == 200:
+            response_data = response.json()
+            return redirect(response_data['payment_url'])
+        else:
+            messages.error(request, "Payment Fail Status Code not 200!!. Please try again.")
+            return redirect('seller_dashboard') 
+        
+
+
+def verify_renewal(request):
+    
+    lookup_url = "https://dev.khalti.com/api/v2/epayment/lookup/" 
+
+    if request.method == 'GET':
+        headers = {
+            'Authorization': 'key 0b7fa0b9a2bc40299d1b91329ff8fe63',
+            'Content-Type': 'application/json',
+        }
+        pidx = request.GET.get('pidx')
+
+        data = json.dumps({
+            'pidx': pidx
+        })
+        response = requests.post(lookup_url, headers=headers, data=data)
+        new_response = json.loads(response.text)
+
+        transaction_id = new_response.get('transaction_id', 'unkown transaction')
+
+        if new_response['status'] == 'Completed':
+            renewal_detail = request.session.get('renewal_detail')
+            if not renewal_detail:
+                messages.error(request, "Session expired. Try again.")
+                return redirect('seller_dashboard') 
+            
+            seller = request.user
+            start_date = datetime.now()
+            end_date = start_date + timedelta(days=30)
+
+            # Update subscription
+            seller.is_subscribed = True
+            seller.subscription_end_date = end_date
+            seller.save()
+
+            # Create Subscription records
+            Subscription.objects.create(
+                seller=seller, 
+                transaction_id=transaction_id,
+                start_date=start_date,
+                end_date = end_date,
+                is_active=True
+            )
+            payment_date = datetime.now()
+            Payment.objects.create(
+                seller=seller,
+                amount= 1100,
+                transaction_id=transaction_id,
+                payment_date = payment_date,
+                status='success',
+                title='Renew Subscription'
+            )
+            seller.save()
+            messages.success(request, "Renew Account Successful.. Thank You")
+            return redirect('seller_dashboard') 
+        else:
+            messages.error(request, f"Payment Canceled")
+            return redirect('seller_dashboard') 
+    else:
+        messages.error(request, f"Payment verification failed: {new_response.get('detail', 'Unknown error.')}")
+        return redirect('seller_dashboard')

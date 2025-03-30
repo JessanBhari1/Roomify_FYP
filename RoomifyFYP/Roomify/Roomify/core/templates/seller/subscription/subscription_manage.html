@@ -1,0 +1,82 @@
+{% extends "extend/sidebar_base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-semibold text-gray-800">Subscription Management</h1>
+
+        <!-- Subscription List -->
+        <div class="mt-8">
+            <h2 class="text-xl font-medium text-gray-700">Your Subscriptions</h2>
+            <div class="overflow-x-auto shadow-lg rounded-lg mt-4">
+                <table class="min-w-full table-auto bg-white">
+                    <thead>
+                        <tr>
+                            {% comment %} <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">Transaction ID</th> {% endcomment %}
+                            <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">Start Date</th>
+                            <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">End Date</th>
+                            <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subscription in subscriptions %}
+                            <tr>
+                                {% comment %} <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ subscription.transaction_id }}</td> {% endcomment %}
+                                <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ subscription.start_date }}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ subscription.end_date }}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+                                    {% if subscription.is_active %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-green-100 text-green-800  rounded-full">
+                                        Active
+                                    </span> 
+                                    {% else %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">
+                                        Inactive
+                                    </span> 
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="mt-8">
+            <h2 class="text-xl font-medium text-gray-700">Your Payment History</h2>
+            <div class="overflow-x-auto shadow-lg rounded-lg mt-4">
+                <table class="min-w-full table-auto bg-white">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">Title</th>
+                            <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">Amount</th>
+                            <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">Payment Date</th>
+                            <th class="px-6 py-3 border-b border-gray-200 text-left text-sm font-medium text-gray-500">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                            <tr>
+                                <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ payment.title }}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ payment.amount }} NPR</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">{{ payment.payment_date }}</td>
+                                <td class="px-6 py-4 border-b border-gray-200 text-sm text-gray-700">
+                                    {% if payment.status %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-green-100 text-green-800  rounded-full">
+                                        Success
+                                    </span> 
+                                    {% else %}
+                                    <span class="inline-block px-3 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">
+                                        Success
+                                    </span> 
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

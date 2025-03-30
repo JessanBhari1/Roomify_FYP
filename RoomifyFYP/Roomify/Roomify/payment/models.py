@@ -20,6 +20,9 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=100)  # Khalti transaction ID
     payment_date = models.DateTimeField(auto_now_add=True)  # Payment date
     status = models.CharField(max_length=20, default='pending')  # Payment status: pending, success, failed
+    title = models.CharField(max_length=200, blank=True) # Title of the payment (optional)
 
     def __str__(self):
         return f"{self.seller.email} - {self.amount}"
+    
+

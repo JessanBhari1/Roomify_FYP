@@ -31,7 +31,7 @@ def customer_appointment_request(request, room_id):
         Notification.objects.create(
             user=seller,
             message=f"New appointment request for {room.title} from {request.user.name}.",
-            expires_at=timezone.now() + timedelta(minutes=10)
+            expires_at=timezone.now() + timedelta(days=10)
         )
         return redirect('single_room_detail', slug=room.room_slug)
     
