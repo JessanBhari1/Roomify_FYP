@@ -79,7 +79,40 @@ def detail_room(request):
     else:
         return redirect('login')
     
-        # Fetch notifications for the seller
+    all_rooms = Room.objects.all().order_by("-id")
+
+    # Initialize variables
+    Room_Name = None
+    min_price = None
+    max_price = None
+    searched_location = None
+
+    if request.method == "POST":
+        Room_Name = request.POST.get("RoomName")
+        min_price = request.POST.get("MinPrice")
+        max_price = request.POST.get("MaxPrice")
+        searched_location = request.POST.get("SearchLocation")
+        print (searched_location)
+
+    # filter by room name
+    if Room_Name:
+        all_rooms = all_rooms.filter(title__icontains = Room_Name)
+
+
+    if min_price and max_price:
+        all_rooms = all_rooms.filter(rent__gte=min_price, rent__lte=max_price)
+    elif min_price:
+        all_rooms = all_rooms.filter(rent__gte=min_price)
+    elif max_price:
+        all_rooms = all_rooms.filter(rent__lte=max_price)
+
+    # filter by city
+    if searched_location:
+        all_rooms = all_rooms.filter(city=searched_location)
+
+        
+    
+     # Fetch notifications for the seller
     notifications = Notification.objects.filter(user=user, expire_status=False).order_by('-created_at')
 
         
@@ -596,3 +629,88 @@ def subscription_management(request):
         'payments': payments,
     }
     return render(request, "seller/subscription/subscription_manage.html", data)
+
+def seller_profile(request):
+    cities = city.objects.all()
+    if request.user.is_authenticated:
+        user = request.user
+        if request.user.user_type != 'seller':
+            return redirect('login_user')
+        else:
+            user.check_subscription_status()
+        # Delete expired notifications
+        Notification.delete_old_notifications()
+
+        # Fetch notifications for the seller
+        notifications = Notification.objects.filter(user=user, expire_status=False).order_by('-created_at')
+
+        # Count unread notifications
+        unread_notifications_count = Notification.objects.filter(user=user, is_read=False, expire_status=False).count()
+
+    else:
+        messages.error(request, "Unauthorized User")
+        return redirect('login_user')
+
+    data={
+        'cities':cities,
+        'notifications':notifications,
+        'unread_notifications_count': unread_notifications_count,
+    }
+    return render(request, "seller/seller_profile.html", data)
+
+def seller_profile_update(request):
+    if request.method == 'POST':
+        seller_name = request.POST.get("name")
+        seller_email = request.POST.get("email")
+        seller_password = request.POST.get("password")
+        seller_phone = request.POST.get("phone")
+        seller_city = request.POST.get("city")
+        seller_img = request.FILES.get("profile_image")
+        seller_id = request.user.id
+        print(seller_img)
+
+        seller = User.objects.get(id=seller_id)
+
+            
+        # Check if the email already exists
+        if seller_email and seller_email != seller.email and User.objects.filter(email=seller_email).exclude(id=seller_id).exists(): 
+        #exclude checks for duplicate email in databse exclude remove the user and checks other user 
+            messages.error(request, "Email already exists!")
+            return redirect("seller_profile")
+        
+
+        # Check if phone is changed and already used by another user
+        if seller_phone and seller_phone != seller.phone and User.objects.filter(phone=seller_phone).exclude(id=seller_id).exists():
+            messages.error(request, "This phone number is already in use by another account.")
+            return redirect('seller_profile')
+
+        # fetch the user
+        seller.name = seller_name
+        seller.email = seller_email
+        seller.phone = seller_phone
+
+        # Update city only if a new city is provided
+        if seller_city:
+            try:
+                seller.city = city.objects.get(city=seller_city)
+            except city.DoesNotExist:
+                messages.error(request, "Invalid City Selected")
+                return redirect("seller_profile")
+
+        # Update profile image if provided
+        if seller_img:
+            seller.user_image = seller_img
+        
+        # Update password only if provided
+        if seller_password:
+            seller.set_password(seller_password)
+            seller.save()
+            messages.success(request, "Profile Updated Succesfully please login again")
+            return redirect("login")
+
+        
+        seller.save()
+        messages.success(request, "Profile Updated Succesfully")
+        return redirect("seller_profile")
+    
+    return render (request, "seller/seller_profile.html")

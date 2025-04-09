@@ -1,0 +1,407 @@
+{% extends "extend/sidebar_base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: #f3f4f6;
+        color: #333;
+        line-height: 1.5;
+    }
+    
+    /* Layout */
+    .container {
+        display: flex;
+        height: 100vh;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+        width: 260px;
+        background-color: #1e2a3a;
+        color: white;
+        flex-shrink: 0;
+    }
+    
+    .sidebar-header {
+        padding: 1.5rem 1rem;
+        border-bottom: 1px solid #2d3a4a;
+    }
+    
+    .sidebar-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .sidebar-nav {
+        margin-top: 1rem;
+    }
+    
+    .nav-item {
+        display: block;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+    
+    .nav-item:hover {
+        background-color: #2d3a4a;
+    }
+    
+    .nav-item.active {
+        background-color: #2d3a4a;
+    }
+    
+    .nav-logout {
+        margin-top: 1rem;
+    }
+    
+    /* Main Content Styles */
+    .main-content {
+        flex: 1;
+        overflow: auto;
+    }
+    
+    /* Header Styles */
+    .header {
+        background-color: white;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .welcome-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1e2a3a;
+    }
+    
+    .user-actions {
+        display: flex;
+        align-items: center;
+    }
+    
+    .notification-bell {
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        color: #4b5563;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .user-name {
+        font-weight: bold;
+        color: #1e2a3a;
+    }
+    
+    /* Profile Content Styles */
+    .profile-content {
+        padding: 2rem;
+    }
+    
+    .profile-container {
+        max-width: 64rem;
+        margin: 0 auto;
+    }
+    
+    .profile-heading {
+        font-size: 1.875rem;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 2rem;
+    }
+    
+    .profile-card {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (min-width: 768px) {
+        .profile-card {
+            flex-direction: row;
+        }
+    }
+    
+    /* Profile Image Section */
+    .profile-image-section {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f9fafb;
+    }
+    
+    @media (min-width: 768px) {
+        .profile-image-section {
+            width: 33.333333%;
+        }
+    }
+    
+    .profile-image-container {
+        width: 12rem;
+        height: 12rem;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .image-upload-label {
+        color: #4b5563;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    .file-input-container {
+        width: 100%;
+    }
+    
+    .file-input-label {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        text-align: center;
+        background-color: #e5e7eb;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .file-input-label:hover {
+        background-color: #d1d5db;
+    }
+    
+    .file-input {
+        display: none;
+    }
+    
+    .file-name {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+        text-align: center;
+    }
+    
+    /* Profile Form Section */
+    .profile-form-section {
+        padding: 2rem;
+    }
+    
+    @media (min-width: 768px) {
+        .profile-form-section {
+            width: 66.666667%;
+        }
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-label {
+        display: block;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.25rem;
+        transition: border-color 0.2s;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+    
+    .select-container {
+        position: relative;
+    }
+    
+    .form-select {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.25rem;
+        appearance: none;
+        transition: border-color 0.2s;
+    }
+    
+    .form-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+    
+    .select-arrow {
+        position: absolute;
+        top: 50%;
+        right: 0.75rem;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+    
+    .form-submit-container {
+        text-align: center;
+    }
+    
+    .form-submit-button {
+        padding: 0.5rem 1.5rem;
+        background-color: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .form-submit-button:hover {
+        background-color: #1d4ed8;
+    }
+    
+    .form-submit-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Error messages */
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Success messages */
+    .success-message {
+        color: #28a745;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+</style>
+
+<div class="container">
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Profile Content -->
+        <main class="profile-content">
+            <div class="profile-container">
+                <!-- Display messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="{% if message.tags %}{{ message.tags }}{% endif %}-message" style="margin-bottom: 1rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <h1 class="profile-heading">Seller Profile</h1>
+
+                <form method="POST" enctype="multipart/form-data" action="{% url 'seller_profile_update' %}">
+                    {% csrf_token %}
+                
+                <div class="profile-card">
+                    <!-- Profile Image Section -->
+                    <div class="profile-image-section">
+                        <div class="profile-image-container">
+                            {% if request.user.user_image %}
+                                <img src="{{ user.user_image.url }}" alt="Profile Picture" class="profile-image">
+                            {% else %}
+                                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiIGZpbGw9IiNlNWU3ZWIiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSI4MCIgcj0iNDAiIGZpbGw9IiM5Y2EzYWYiLz48cGF0aCBkPSJNMTYwLDE2MCBDMTY1LjUyMiwxNDQuMTA2IDE2MCwxMzAgMTAwLDEzMCBDNDAsMTMwIDM0LjI0MiwxNDQuMDY0IDQwLDE2MCBDNTIuMDA2LDE5NC44NDYgMTQ3Ljg4NiwxOTQuODQ2IDE2MCwxNjAgWiIgZmlsbD0iIzljYTNhZiIvPjwvc3ZnPg==" alt="Profile Picture" class="profile-image">
+                            {% endif %}
+                        </div>
+                        <p class="image-upload-label">Change Profile Image:</p>
+                        <div class="file-input-container">
+                            <label for="profile_image" class="file-input-label">
+                                <span>Choose File</span>
+
+                               
+                            </label>
+                            <input type="file" name="profile_image" class="file-input" id="profile_image" accept="image/*">
+                            
+                            <p class="file-name" id="file-name">No file chosen</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Form Section -->
+                    <div class="profile-form-section">
+                        
+                            <div class="form-group">
+                                <label class="form-label">Name:</label>
+                                <input type="text" name="name" value="{{ request.user.name }}" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Email:</label>
+                                <input type="email" name="email" value="{{ request.user.email }}" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Password:</label>
+                                <input type="password" name="password" placeholder="Leave empty to keep current password" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">City:</label>
+                                <div class="select-container">
+                                    <select class="form-select" name="city">
+                                        <option value="">Select City</option>
+                                        {% for c in cities %}
+                                            <option value="{{ c.city }}" {% if request.user.city.city == c.city %}selected{% endif %}>{{ c.city }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="select-arrow">▼</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Phone:</label>
+                                <input type="text" name="phone" value="{{ request.user.phone }}" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-submit-container">
+                                <button type="submit" class="form-submit-button">
+                                    Update Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Display the selected file name
+    document.getElementById('profile_image').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+        document.getElementById('file-name').textContent = fileName;
+    });
+</script>
+
+{% endblock content %}

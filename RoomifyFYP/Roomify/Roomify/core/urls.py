@@ -13,6 +13,9 @@ urlpatterns = [
     path('seller_rooms/', views.seller_rooms, name="seller_rooms"),
     path('room_add/', views.room_add, name="room_add"),
     path("updateroom/<int:room_id>", views.update_room, name="update_room"),
+    path("seller_profile/", views.seller_profile, name="seller_profile"),
+    path("seller_profile_update/", views.seller_profile_update, name="seller_profile_update"),
+
 
     # appointment
     path('seller_appointments/', views.seller_appointments, name="seller_appointments"),
