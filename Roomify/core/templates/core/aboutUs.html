@@ -1,0 +1,195 @@
+{% extends "extend/base.html" %}
+{% load static %}
+{% block content %}
+
+
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .hero_aboutUs{
+            background-color: #ff6f61 !important;
+        }
+        .bg-primary {
+            background-color: #ff6f61 !important;
+        }
+        .text-primary {
+            color: #ff6f61 !important;
+        }
+        .border-primary {
+            border-color: #ff6f61 !important;
+        }
+        .hover\:bg-primary:hover {
+            background-color: #ff6f61 !important;
+        }
+        .hover\:text-primary:hover {
+            color: #ff6f61 !important;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255, 111, 97, 0.2);
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+
+    
+
+    <!-- Hero Section -->
+    <section class="relative py-20 bg-primary from-primary to-orange-500 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Our Story</h1>
+            <p class="text-xl max-w-3xl mx-auto">Connecting people with perfect living spaces since 2024</p>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 transform skew-y-1 origin-top-left bg-white"></div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="pt-10 py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <div class="lg:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         alt="Roomify mission" 
+                         class="rounded-xl shadow-lg w-full h-auto">
+                </div>
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Our Mission</h2>
+                    <p class="text-gray-600 mb-6">At Roomify, we're revolutionizing the way people find and rent rooms. Our platform bridges the gap between room seekers and property owners, creating a seamless, transparent, and efficient marketplace.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-full mr-4 mt-1">
+                                <i class="fas fa-check text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800">Simplify Room Hunting</h3>
+                                <p class="text-gray-600">We make finding the perfect room as easy as a few clicks.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-full mr-4 mt-1">
+                                <i class="fas fa-check text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800">Empower Property Owners</h3>
+                                <p class="text-gray-600">Our tools help sellers manage listings and connect with potential renters effortlessly.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-full mr-4 mt-1">
+                                <i class="fas fa-check text-primary"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800">Build Trust</h3>
+                                <p class="text-gray-600">Verified profiles and secure communication create a trusted community.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Roomify in Numbers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl p-8 text-center stat-card shadow-sm">
+                    <div class="text-5xl font-bold text-primary mb-4">10,000+</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Rooms Listed</h3>
+                    <p class="text-gray-600">From cozy studios to spacious shared apartments</p>
+                </div>
+                <div class="bg-white rounded-xl p-8 text-center stat-card shadow-sm">
+                    <div class="text-5xl font-bold text-primary mb-4">50,000+</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Happy Users</h3>
+                    <p class="text-gray-600">People who found their perfect living space</p>
+                </div>
+                <div class="bg-white rounded-xl p-8 text-center stat-card shadow-sm">
+                    <div class="text-5xl font-bold text-primary mb-4">100+</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Cities</h3>
+                    <p class="text-gray-600">Across the country and expanding</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CEO Intro Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Meet Our CEO</h2>
+        <p class="text-xl text-center text-gray-600 max-w-2xl mx-auto mb-12">The visionary leader behind Roomify</p>
+        
+        <div class="flex justify-center">
+            <div class="bg-white rounded-xl p-8 shadow-lg team-card transition-all duration-300 w-full max-w-md">
+                <div class="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-4 border-primary relative">
+                    <img src="{% static 'img/jessan.jpg' %}" alt="Jessan Bhari" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
+                </div>
+                <h3 class="text-2xl font-bold text-center text-gray-800">Jessan Bhari</h3>
+                <p class="text-primary text-center text-lg font-medium mb-4">CEO & Founder</p>
+                <p class="text-gray-600 text-center mb-6">Passionate Student at Islington College, Kathmandu</p>
+                <div class="flex justify-center space-x-4 mt-6">
+                    <a href="https://www.linkedin.com/in/jessan-bhari-1b7436286/" 
+                       class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white transition-all duration-300">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://www.facebook.com/joshan.bhari" 
+                       class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white transition-all duration-300">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="https://github.com/JessanBhari1" 
+                       class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white transition-all duration-300">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-gray-100">
+                    <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider text-center mb-3">Leadership Philosophy</h4>
+                    <p class="text-gray-600 text-center text-sm italic">
+                        "Building bridges between people and their perfect living spaces through innovation and trust."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Values Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Our Core Values</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-handshake text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Trust & Transparency</h3>
+                    <p class="text-gray-600">We believe in open communication and verified information to build lasting relationships between room seekers and providers.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-lightbulb text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Innovation</h3>
+                    <p class="text-gray-600">We continuously improve our platform to make the room search experience simpler, faster, and more enjoyable.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-users text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Community Focus</h3>
+                    <p class="text-gray-600">We're not just a platform - we're building a community where everyone can find their perfect living situation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+{% endblock content %}

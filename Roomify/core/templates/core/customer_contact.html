@@ -1,0 +1,169 @@
+{% extends "extend/base.html" %}
+{% load static %}
+{% block content %}
+
+
+    <style>
+        .contact-form-shadow {
+            box-shadow: 0 10px 30px rgba(255, 111, 97, 0.2);
+        }
+        .map-container {
+            height: 100%;
+            min-height: 300px;
+        }
+        .bg-primary {
+            background-color: #ff6f61;
+        }
+        .text-primary {
+            color: #ff6f61;
+        }
+        .border-primary {
+            border-color: #ff6f61;
+        }
+        .hover\:bg-primary:hover {
+            background-color: #ff6f61;
+        }
+        .hover\:text-primary:hover {
+            color: #ff6f61;
+        }
+        .focus\:ring-primary:focus {
+            --tw-ring-color: #ff6f61;
+        }
+    </style>
+
+<body class="bg-gray-50 font-sans">
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Contact Roomify</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Have questions about our rooms or services? Our team is here to help you find your perfect space.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Form -->
+            <div class="bg-white rounded-xl p-8 contact-form-shadow">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Send us a message</h2>
+                <form action="{% url 'manage_contact' %}" method="POST" >
+                    {% csrf_token %}
+                    <div class="mb-6">
+                        <label for="name" class="block text-gray-700 mb-2">Your Name</label>
+                        <input type="text" id="name" name='name' class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition" placeholder="Enter your Name" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="email" class="block text-gray-700 mb-2">Email Address</label>
+                        <input type="email" id="email" name='email' class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition" placeholder="you@example.com" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="subject" class="block text-gray-700 mb-2">Subject</label>
+                        <input type="text" id="subject" name='subject' class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition" placeholder="What's this about?" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="message" class="block text-gray-700 mb-2">Message</label>
+                        <textarea id="message" name='message' rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition" placeholder="Your message here..." required></textarea>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <button type="submit" class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-opacity-90 transition font-medium">Send Message</button>
+                    {% else %}
+                    <a type="submit" class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-opacity-90 transition font-medium" data-bs-toggle="modal" data-bs-target="#loginModal">Send Message</a>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="space-y-8">
+                <div class="bg-white rounded-xl p-8 shadow-sm">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Contact Information</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-opacity-10 p-3 rounded-full mr-4">
+                                <i class="fa fa-map-marker-alt text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800">Our Location</h3>
+                                <p class="text-gray-600">123 Roomify Street, Kamalpokari<br>Islington College, Kathmandu</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-opacity-10 p-3 rounded-full mr-4">
+                                <i class="fas fa-envelope text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800">Email Us</h3>
+                                <p class="text-gray-600">support@roomify.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-opacity-10 p-3 rounded-full mr-4">
+                                <i class="fas fa-phone-alt text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800">Call Us</h3>
+                                <p class="text-gray-600">+977 9847621097</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map -->
+                <div class="bg-white rounded-xl p-8 shadow-sm">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Find Us</h2>
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2761.8024470732103!2d85.32234319620599!3d27.707852878622795!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb1908434cb3c5%3A0x1fdf1a6d41d2512d!2sIslington%20College!5e0!3m2!1sen!2snp!4v1745168091927!5m2!1sen!2snp" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FAQ Section -->
+    <section class="bg-gray-100 py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Frequently Asked Questions</h2>
+            <div class="max-w-4xl mx-auto space-y-4">
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <button class="flex justify-between items-center w-full text-left">
+                        <h3 class="font-medium text-lg text-gray-800">How do I list my room on Roomify?</h3>
+                        <i class="fas fa-chevron-down text-primary transition-transform transform"></i>
+                    </button>
+                    <div class="mt-3 text-gray-600 hidden">
+                        <p>To list your room, simply register as a seller, complete your profile, and click "Add Room" in your dashboard. You'll need to provide details about the room, photos, and pricing.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <button class="flex justify-between items-center w-full text-left">
+                        <h3 class="font-medium text-lg text-gray-800">What's included in the monthly subscription?</h3>
+                        <i class="fas fa-chevron-down text-primary transition-transform transform"></i>
+                    </button>
+                    <div class="mt-3 text-gray-600 hidden">
+                        <p>Our monthly subscription includes unlimited room listings, appointment scheduling, real-time chat with potential renters, and detailed analytics about your listings' performance.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <button class="flex justify-between items-center w-full text-left">
+                        <h3 class="font-medium text-lg text-gray-800">How can I contact a seller directly?</h3>
+                        <i class="fas fa-chevron-down text-primary transition-transform transform"></i>
+                    </button>
+                    <div class="mt-3 text-gray-600 hidden">
+                        <p>Once you've registered as a customer, you can use our real-time chat feature to contact any seller directly from their room listing page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Simple FAQ toggle functionality
+        document.querySelectorAll('.bg-white.rounded-lg button').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('i');
+                
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+    </script>
+</body>
+</html>
+
+{% endblock content %}

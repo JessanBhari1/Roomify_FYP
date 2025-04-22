@@ -1,0 +1,125 @@
+{% extends "extend/sidebar_base.html" %}
+{% load static %}
+{% block content %}
+<div class="flex flex-col h-[calc(100vh-120px)] border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <!-- Chat List Header -->
+    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+        <h4 class="text-lg font-semibold text-gray-800">Your Chats</h4>
+    </div>
+
+    <!-- Chat List -->
+    <div class="flex-1 overflow-y-auto" id="chatList">
+        {% for room in chat_rooms %}
+        <a href="{% url 'chat_room' room.id %}" 
+           class="flex items-center p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200 relative"
+           data-room-id="{{ room.id }}">
+            <!-- Avatar -->
+            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 mr-3">
+                {% if room.customer == request.user %}
+                    <img src="{{ room.seller.user_image.url }}" 
+                         alt="{{ room.seller.name }}"
+                         class="w-full h-full object-cover">
+                {% else %}
+                    <img src="{{ room.customer.user_image.url }}" 
+                         alt="{{ room.customer.name }}"
+                         class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+
+            <!-- Chat Info -->
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                    <h6 class="text-sm font-semibold text-gray-900 truncate">
+                        {% if room.customer == request.user %}
+                            {{ room.seller.name | upper }}: <span class="font-normal text-gray-600">[{{ room.room.title }}]</span>
+                        {% else %}
+                            {{ room.customer.name | upper }}: <span class="font-normal text-gray-600">[{{ room.room.title }}]</span>
+                        {% endif %}
+                    </h6>
+                </div>
+                <p class="text-sm text-gray-500 truncate mt-1">{{ room.latest_message|truncatechars:30 }}</p>
+            </div>
+
+            <!-- Unread Indicator -->
+            {% if room.has_unread_messages %}
+            <div class="ml-2 flex-shrink-0">
+                <svg class="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+            {% endif %}
+        </a>
+        {% empty %}
+        <div class="p-4 text-center text-gray-500">
+            No chats yet
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- JavaScript remains exactly the same -->
+<script>
+    const chatListSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat_list/{{ request.user.id }}/'
+    );
+
+    // Connection logging
+    chatListSocket.onopen = function(e) {
+        console.log("Chat list WebSocket connected");
+    };
+
+    chatListSocket.onclose = function(e) {
+        console.log("Chat list WebSocket disconnected", e);
+        // Optional: Add reconnection logic here
+    };
+
+    chatListSocket.onerror = function(e) {
+        console.error("Chat list WebSocket error:", e);
+    };
+
+    chatListSocket.onmessage = function(e) {
+        console.log("Chat list update received:", e.data);
+        const data = JSON.parse(e.data);
+        if (data.type === 'chat_list_update') {
+            updateChatList(data);
+        }
+    };
+
+    function updateChatList(data) {
+        const chatItem = document.querySelector(`[data-room-id="${data.room_id}"]`);
+        const chatList = document.getElementById('chatList');
+        
+        if (chatItem) {
+            // Update message preview
+            const messagePreview = chatItem.querySelector('p');
+            if (messagePreview) {
+                messagePreview.textContent = data.latest_message;
+            }
+            
+            // Update unread indicator
+            let unreadIndicator = chatItem.querySelector('svg');
+            if (data.has_unread) {
+                if (!unreadIndicator) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'ml-2 flex-shrink-0';
+                    indicator.innerHTML = `
+                        <svg class="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    `;
+                    chatItem.appendChild(indicator);
+                }
+            } else if (unreadIndicator) {
+                unreadIndicator.parentElement.remove();
+            }
+            
+            // Move to top
+            if (chatList.firstChild) {
+                chatList.insertBefore(chatItem, chatList.firstChild);
+            }
+        } else {
+            console.log("New chat room detected - might need to refresh");
+        }
+    }
+</script>
+{% endblock content %}

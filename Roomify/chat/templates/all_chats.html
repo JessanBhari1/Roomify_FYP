@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roomfiy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex flex-col h-screen max-w-7xl mx-auto bg-white shadow-lg">
+    <!-- Chat Header -->
+    <div class="flex justify-between items-center p-4 md:p-6 bg-indigo-900 text-white">
+        <h4 class="text-lg md:text-xl font-semibold uppercase">
+            {% if current_chat.customer == request.user %}
+                {{ current_chat.seller.name }}
+            {% else %}
+                {{ current_chat.customer.name }}
+            {% endif %}
+        </h4>
+        {% if request.user.user_type == 'customer' %}
+        <a href="{% url 'customer_chat_list' %}" class="flex items-center px-3 py-1 border-2 border-white rounded-md text-white font-medium hover:bg-white hover:text-indigo-900 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-md">
+            <i class="fas fa-times mr-1"></i>
+            <span class="hidden sm:inline">Close</span>
+        </a>
+        {% elif request.user.user_type == 'seller' %}
+        <a href="{% url 'seller_chat_list' %}" class="flex items-center px-3 py-1 border-2 border-white rounded-md text-white font-medium hover:bg-white hover:text-indigo-900 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-md">
+            <i class="fas fa-times mr-1"></i>
+            <span class="hidden sm:inline">Close</span>
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Room Info Box -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 p-4 bg-white">
+        <div class="mb-3 md:mb-0">
+            <h5 class="text-lg font-medium text-gray-800">{{ current_chat.room.title }}</h5>
+            <p class="text-green-600 font-bold">₹{{ current_chat.room.rent }}</p>
+            <p class="text-sm text-gray-500">{{ current_chat.room.address }}, {{ current_chat.room.city.city }}</p>
+        </div>
+        <a href="{% url 'single_room_detail' current_chat.room.room_slug %}" class="px-4 py-2 border-2 border-indigo-900 rounded-md text-indigo-900 font-medium hover:bg-indigo-900 hover:text-white transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-md">
+            View Room
+        </a>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="flex-1 overflow-y-auto p-4 bg-gray-50" id="messages-container">
+        <div class="flex flex-col space-y-4 min-h-full justify-end" id="messages-wrapper">
+            {% for message in messages %}
+            <div class="flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
+                <div class="{% if message.sender == request.user %}bg-indigo-800 text-white{% else %}bg-white border border-gray-200{% endif %} rounded-2xl px-4 py-2 max-w-xs md:max-w-md lg:max-w-lg shadow-sm">
+                    <p class="break-words">{{ message.message }}</p>
+                    <span class="text-xs opacity-70 block mt-1 {% if message.sender == request.user %}text-indigo-200{% else %}text-gray-500{% endif %}">
+                        {{ message.timestamp|time }}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Message Input -->
+    <div class="p-4 border-t border-gray-200 bg-white">
+        <div class="flex space-x-2">
+            <input type="text" id="chat-message-input" placeholder="Type a message..." 
+                   class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <button id="chat-message-submit" class="px-4 py-2 bg-indigo-800 text-white rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
+                <i class="fas fa-paper-plane"></i>
+                <span class="sr-only">Send</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roomId = {{ current_chat.id|default:0 }};
+        const userId = {{ request.user.id }};
+        
+        if (roomId > 0) {
+            // Notify server that messages are being viewed
+            const readSocket = new WebSocket(
+                'ws://' + window.location.host +
+                '/ws/chat/' + roomId + '/'
+            );
+            
+            // When connection opens, send read notification
+            readSocket.onopen = function() {
+                readSocket.send(JSON.stringify({
+                    'type': 'mark_read',
+                    'user_id': userId,
+                    'room_id': roomId
+                }));
+            };
+            
+            // Close after sending (we don't need persistent connection)
+            setTimeout(() => readSocket.close(), 1000);
+            
+            // Also notify when user focuses the window
+            window.addEventListener('focus', function() {
+                if (readSocket.readyState === WebSocket.CLOSED) {
+                    const newSocket = new WebSocket(
+                        'ws://' + window.location.host +
+                        '/ws/chat/' + roomId + '/'
+                    );
+                    newSocket.onopen = function() {
+                        newSocket.send(JSON.stringify({
+                            'type': 'mark_read',
+                            'user_id': userId,
+                            'room_id': roomId
+                        }));
+                        setTimeout(() => newSocket.close(), 1000);
+                    };
+                }
+            });
+        }
+    });
+</script>
+
+<!-- WebSocket Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roomId = {{ current_chat.id|default:0 }};
+        const userId = {{ request.user.id }};
+        const messagesContainer = document.getElementById('messages-container');
+        const messagesWrapper = document.getElementById('messages-wrapper');
+        const messageInput = document.getElementById('chat-message-input');
+        const sendButton = document.getElementById('chat-message-submit');
+        const chatInterface = document.getElementById('chat-interface');
+        const backButton = document.getElementById('back-to-chats');
+        
+        // Initialize scroll position
+        function initializeScroll() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Create a new message element
+        function createMessageElement(message, senderId, timestamp, isSent = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${isSent ? 'justify-end' : 'justify-start'}`;
+            
+            const timeString = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.innerHTML = `
+                <div class="${isSent ? 'bg-indigo-800 text-white' : 'bg-white border border-gray-200'} rounded-2xl px-4 py-2 max-w-xs md:max-w-md lg:max-w-lg shadow-sm">
+                    <p class="break-words">${message}</p>
+                    <span class="text-xs opacity-70 block mt-1 ${isSent ? 'text-indigo-200' : 'text-gray-500'}">
+                        ${timeString}
+                    </span>
+                </div>
+            `;
+            
+            return messageDiv;
+        }
+        
+        // Only initialize WebSocket if we have a chat room
+        if (roomId > 0) {
+            // WebSocket connection
+            const chatSocket = new WebSocket(
+                'ws://' + window.location.host +
+                '/ws/chat/' + roomId + '/'
+            );
+            
+            // Handle incoming messages
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                
+                // Only process chat messages (ignore confirmations)
+                if (data.type === 'chat_message') {
+                    const isSent = data.sender_id == userId;
+                    
+                    const messageElement = createMessageElement(
+                        data.message, 
+                        data.sender_id, 
+                        data.timestamp,
+                        isSent
+                    );
+                    
+                    messagesWrapper.appendChild(messageElement);
+                    initializeScroll();
+                }
+            };
+            
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+            
+            // Send message function
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                
+                if (message && chatSocket.readyState === WebSocket.OPEN) {
+                    const timestamp = new Date().toISOString();
+                    
+                    // Create and display the message immediately (optimistic UI)
+                    const messageElement = createMessageElement(
+                        message, 
+                        userId, 
+                        timestamp,
+                        true
+                    );
+                    
+                    messagesWrapper.appendChild(messageElement);
+                    initializeScroll();
+                    
+                    // Send via WebSocket
+                    chatSocket.send(JSON.stringify({
+                        'message': message,
+                        'sender_id': userId,
+                        'room_id': roomId
+                    }));
+                    
+                    // Clear input
+                    messageInput.value = '';
+                }
+            }
+            
+            // Event listeners
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Initialize on load
+            initializeScroll();
+        }
+        
+        // Mobile responsive behavior
+        function handleMobileView() {
+            if (window.innerWidth <= 768) {
+                if (roomId > 0) {
+                    document.getElementById('chat-sidebar').style.display = 'none';
+                    document.getElementById('chat-main').style.display = 'flex';
+                } else {
+                    document.getElementById('chat-sidebar').style.display = 'flex';
+                    document.getElementById('chat-main').style.display = 'none';
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
